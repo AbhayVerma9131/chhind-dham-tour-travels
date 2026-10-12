@@ -1,0 +1,216 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum RentalType {
+  SELF_DRIVE
+  CHAUFFEUR
+  TOUR_PACKAGE
+}
+
+enum BookingStatus {
+  PENDING
+  CONTACTED
+  CONFIRMED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+model AdminUser {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  name         String
+  passwordHash String
+  role         Role       @default(ADMIN)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  auditLogs    AuditLog[]
+
+  @@map("admin_users")
+}
+
+model Vehicle {
+  id              String         @id @default(uuid())
+  slug            String         @unique
+  name            String
+  brand           String
+  model           String?
+  category        String?
+  seatingCapacity Int?
+  transmission    String?        // e.g., "Manual", "Automatic"
+  fuelType        String?        // e.g., "Petrol", "Diesel", "CNG"
+  luggageCapacity String?
+  description     String?
+  isActive        Boolean        @default(true)
+  isFeatured      Boolean        @default(false)
+  supportedModes  String[]       @default(["CHAUFFEUR", "SELF_DRIVE"])
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  images          VehicleImage[]
+  rates           RentalRate[]
+  bookings        BookingRequest[]
+
+  @@map("vehicles")
+}
+
+model VehicleImage {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  imageUrl    String
+  altText     String?
+  displayOrder Int     @default(0)
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_images")
+}
+
+model RentalRate {
+  id            String      @id @default(uuid())
+  vehicleId     String?
+  rentalType    RentalType
+  durationHours Int?        // For self-drive (e.g., 6, 12, 24)
+  seatCategory  Int?        // For chauffeur-driven (e.g., 5 or 7)
+  basePrice     Decimal?    @db.Decimal(10, 2)
+  ratePerKm     Decimal?    @db.Decimal(10, 2)
+  isActive      Boolean     @default(true)
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  vehicle       Vehicle?    @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("rental_rates")
+}
+
+model TourPackage {
+  id             String           @id @default(uuid())
+  slug           String           @unique
+  title          String
+  origin         String           @default("Bhopal")
+  destination    String
+  basePrice      Decimal          @db.Decimal(10, 2)
+  vehicleModel   String?          // e.g., "Ertiga"
+  description    String?
+  isPublished    Boolean          @default(true)
+  isFeatured     Boolean          @default(false)
+  itinerary      Json?
+  inclusionsNotes String?         // Unconfirmed notes flag
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  bookings       BookingRequest[]
+
+  @@map("tour_packages")
+}
+
+model BookingRequest {
+  id              String                 @id @default(uuid())
+  referenceNumber String                 @unique // e.g., CDT-20261013-XXXX
+  customerName    String
+  customerPhone   String
+  customerEmail   String?
+  rentalType      RentalType
+  vehicleId       String?
+  tourPackageId   String?
+  pickupDate      DateTime
+  returnDate      DateTime?
+  pickupLocation  String
+  dropLocation    String?
+  passengerCount  Int?
+  status          BookingStatus          @default(PENDING)
+  customerNotes   String?
+  adminNotes      String?
+  estimatedPrice  Decimal?               @db.Decimal(10, 2)
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  vehicle         Vehicle?               @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  tourPackage     TourPackage?           @relation(fields: [tourPackageId], references: [id], onDelete: SetNull)
+  statusHistory   BookingStatusHistory[]
+
+  @@map("booking_requests")
+}
+
+model BookingStatusHistory {
+  id               String         @id @default(uuid())
+  bookingRequestId String
+  fromStatus       BookingStatus?
+  toStatus         BookingStatus
+  notes            String?
+  changedBy        String?        // Admin ID or "SYSTEM"
+  createdAt        DateTime       @default(now())
+
+  bookingRequest   BookingRequest @relation(fields: [bookingRequestId], references: [id], onDelete: Cascade)
+
+  @@map("booking_status_history")
+}
+
+model ContactEnquiry {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  email     String?
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_enquiries")
+}
+
+model BusinessSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  category    String   @default("GENERAL") // GENERAL, PRICING_POLICY, CONTACT, LEGAL
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("business_settings")
+}
+
+model Promotion {
+  id          String    @id @default(uuid())
+  title       String
+  code        String?   @unique
+  discountText String?
+  startDate   DateTime?
+  endDate     DateTime?
+  isActive    Boolean   @default(true)
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("promotions")
+}
+
+model AuditLog {
+  id           String     @id @default(uuid())
+  adminUserId  String?
+  action       String     // CREATE, UPDATE, DELETE, STATUS_CHANGE
+  targetEntity String     // VEHICLE, BOOKING, PRICING, PACKAGE, SETTING
+  targetId     String?
+  details      Json?
+  ipAddress    String?
+  createdAt    DateTime   @default(now())
+
+  adminUser    AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
