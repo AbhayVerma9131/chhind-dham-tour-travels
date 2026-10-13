@@ -117,13 +117,13 @@ export async function createBookingEnquiry(rawInput: unknown): Promise<BookingCr
       bookingId: booking.id,
       message: "Your booking request has been submitted. Our team will verify availability and contact you shortly.",
     };
-  } catch (err) {
+  } catch (err: any) {
     logger.error("Failed to save booking enquiry to database", err);
-    // In fallback / offline mode, return success with generated reference so customer gets reference number
+    console.error("CRITICAL: Failed to save booking to database:", err?.message || err);
     return {
-      success: true,
-      referenceNumber,
-      message: "Your booking enquiry reference has been generated. Please contact us via phone or WhatsApp with this reference.",
+      success: false,
+      message: "Database connection error on server. Please ensure DATABASE_URL is set in Vercel settings.",
+      errors: { database: [err?.message || "Database insert failed"] },
     };
   }
 }
