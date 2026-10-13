@@ -30,6 +30,26 @@ export async function createBookingEnquiry(rawInput: unknown): Promise<BookingCr
   const data: CreateBookingInput = parsed.data;
   const referenceNumber = generateBookingReference();
 
+  let verifiedVehicleId: string | null = null;
+  if (data.vehicleId && !data.vehicleId.startsWith("seed-")) {
+    try {
+      const v = await prisma.vehicle.findUnique({ where: { id: data.vehicleId } });
+      if (v) verifiedVehicleId = v.id;
+    } catch {
+      // Ignore if vehicle lookup fails
+    }
+  }
+
+  let verifiedPackageId: string | null = null;
+  if (data.tourPackageId && !data.tourPackageId.startsWith("seed-")) {
+    try {
+      const p = await prisma.tourPackage.findUnique({ where: { id: data.tourPackageId } });
+      if (p) verifiedPackageId = p.id;
+    } catch {
+      // Ignore if package lookup fails
+    }
+  }
+
   try {
     const booking = await prisma.bookingRequest.create({
       data: {
@@ -38,8 +58,8 @@ export async function createBookingEnquiry(rawInput: unknown): Promise<BookingCr
         customerPhone: data.customerPhone,
         customerEmail: data.customerEmail || null,
         rentalType: data.rentalType,
-        vehicleId: data.vehicleId || null,
-        tourPackageId: data.tourPackageId || null,
+        vehicleId: verifiedVehicleId,
+        tourPackageId: verifiedPackageId,
         pickupDate: data.pickupDate,
         returnDate: data.returnDate || null,
         pickupLocation: data.pickupLocation,

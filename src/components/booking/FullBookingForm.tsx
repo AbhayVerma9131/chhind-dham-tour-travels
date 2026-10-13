@@ -103,7 +103,12 @@ export function FullBookingForm({
       if (res.ok && data.success) {
         setSuccessData({ referenceNumber: data.referenceNumber });
       } else {
-        setErrorMessage(data.message || "Failed to submit booking request.");
+        if (data.errors && typeof data.errors === "object") {
+          const firstError = Object.values(data.errors).flat()[0] as string | undefined;
+          setErrorMessage(firstError || data.message || "Failed to submit booking request.");
+        } else {
+          setErrorMessage(data.message || "Failed to submit booking request.");
+        }
       }
     } catch (err) {
       setErrorMessage("Network issue. Please contact Karan (9691345722) or Akash (7400950207).");

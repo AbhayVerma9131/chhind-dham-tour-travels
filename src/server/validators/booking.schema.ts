@@ -28,8 +28,8 @@ export const createBookingSchema = z
       .optional()
       .or(z.literal("")),
     rentalType: RentalTypeEnum,
-    vehicleId: z.string().uuid().optional().nullable(),
-    tourPackageId: z.string().uuid().optional().nullable(),
+    vehicleId: z.string().trim().min(1).optional().nullable(),
+    tourPackageId: z.string().trim().min(1).optional().nullable(),
     pickupDate: z.coerce.date().refine((date) => !isNaN(date.getTime()), {
       message: "Valid pickup date is required",
     }),
