@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Phone, MapPin, Shield, MessageSquare, ArrowUpRight } from "lucide-react";
+import { Phone, MapPin, Shield, MessageSquare, ArrowUpRight, Star } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/utils";
 
 export function Footer() {
@@ -12,20 +12,31 @@ export function Footer() {
           {/* Brand Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 bg-white p-0.5 shadow-xs shrink-0 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-amber-100 bg-white shadow-md shrink-0 flex items-center justify-center">
                 <img
                   src="/images/logo.png"
                   alt="छिंद धाम TOUR TRAVELS Logo"
                   className="w-full h-full object-contain"
                 />
               </div>
-              <span className="text-xl font-bold tracking-tight text-slate-900">
-                <span className="text-blue-600">छिंद धाम</span> TOUR TRAVELS
-              </span>
+              <div>
+                <span className="text-xl font-bold tracking-tight text-slate-900 block">
+                  <span className="text-blue-600">छिंद धाम</span> TOUR TRAVELS
+                </span>
+                <span className="text-xs text-slate-500">Bhanpur, Bhopal</span>
+              </div>
             </div>
             <p className="text-slate-600 text-sm leading-relaxed">
               Professional car rental and pilgrimage travel agency serving Bhopal and outstation routes across Madhya Pradesh.
             </p>
+            {/* 11 Years Trust Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 shadow-sm">
+              <Star className="w-4 h-4 fill-amber-900 text-amber-900" />
+              <div>
+                <div className="text-[11px] font-bold text-amber-900 leading-tight">Working with customers since</div>
+                <div className="text-base font-extrabold text-amber-900 leading-tight">11 Years ✦</div>
+              </div>
+            </div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700">
               <Shield className="w-3.5 h-3.5 text-blue-600" />
               <span>Verified Fleet &amp; Driver Network</span>
