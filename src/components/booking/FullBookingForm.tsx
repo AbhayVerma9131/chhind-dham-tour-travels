@@ -49,7 +49,8 @@ export function FullBookingForm({
       return;
     }
 
-    if (!/^[6-9]\d{9}$/.test(phone.trim())) {
+    const cleanedPhone = phone.trim().replace(/[\s\-\+]/g, "").replace(/^(91|0)/, "");
+    if (!/^[6-9]\d{9}$/.test(cleanedPhone)) {
       setErrorMessage("Please enter a valid 10-digit Indian mobile number");
       return;
     }
@@ -74,7 +75,7 @@ export function FullBookingForm({
     try {
       const payload: Record<string, unknown> = {
         customerName: name.trim(),
-        customerPhone: phone.trim(),
+        customerPhone: cleanedPhone,
         customerEmail: email.trim() || undefined,
         rentalType,
         pickupDate: new Date(pickupDate).toISOString(),

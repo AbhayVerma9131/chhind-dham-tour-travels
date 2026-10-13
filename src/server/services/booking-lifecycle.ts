@@ -5,7 +5,7 @@ import { BookingStatus } from "@/server/validators/booking.schema";
  * Enforces business lifecycle integrity.
  */
 export const ALLOWED_STATUS_TRANSITIONS: Record<BookingStatus, BookingStatus[]> = {
-  PENDING: ["CONTACTED", "CANCELLED", "REJECTED"],
+  PENDING: ["CONTACTED", "CONFIRMED", "CANCELLED", "REJECTED"],
   CONTACTED: ["CONFIRMED", "CANCELLED", "REJECTED"],
   CONFIRMED: ["COMPLETED", "CANCELLED"],
   REJECTED: [],

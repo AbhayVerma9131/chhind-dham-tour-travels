@@ -28,10 +28,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
+    console.error("Booking submission error:", error);
     return NextResponse.json(
       {
         success: false,
         message: "An unexpected error occurred while processing your booking enquiry.",
+        error: String(error),
       },
       { status: 500 }
     );

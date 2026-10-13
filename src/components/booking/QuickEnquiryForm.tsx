@@ -23,7 +23,8 @@ export function QuickEnquiryForm() {
       return;
     }
 
-    if (!/^[6-9]\d{9}$/.test(phone.trim())) {
+    const cleanedPhone = phone.trim().replace(/[\s\-\+]/g, "").replace(/^(91|0)/, "");
+    if (!/^[6-9]\d{9}$/.test(cleanedPhone)) {
       setErrorMsg("Please enter a valid 10-digit Indian mobile number");
       return;
     }
@@ -40,7 +41,7 @@ export function QuickEnquiryForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customerName: name.trim(),
-          customerPhone: phone.trim(),
+          customerPhone: cleanedPhone,
           rentalType,
           pickupDate: new Date(pickupDate).toISOString(),
           pickupLocation: "Bhopal (Confirmed on call)",

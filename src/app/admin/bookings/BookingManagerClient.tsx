@@ -74,6 +74,24 @@ export function BookingManagerClient({ initialBookings }: { initialBookings: Boo
     }
   };
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetch("/api/v1/admin/bookings");
+      const data = await res.json();
+      if (res.ok && data.success && Array.isArray(data.bookings)) {
+        setBookings(data.bookings);
+        setNotice({ message: "Bookings refreshed from database.", type: "success" });
+      }
+    } catch {
+      setNotice({ message: "Failed to refresh bookings.", type: "error" });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Search & Filter Toolbar */}
@@ -104,14 +122,26 @@ export function BookingManagerClient({ initialBookings }: { initialBookings: Boo
           </select>
         </div>
 
-        <a
-          href="/api/v1/admin/bookings/export"
-          download
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/90 font-semibold text-xs transition-colors shrink-0"
-        >
-          <Download className="w-4 h-4 text-blue-600" />
-          <span>Export CSV</span>
-        </a>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/90 font-semibold text-xs transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-blue-600 ${isRefreshing ? "animate-spin" : ""}`} />
+            <span>Refresh</span>
+          </button>
+
+          <a
+            href="/api/v1/admin/bookings/export"
+            download
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/90 font-semibold text-xs transition-colors"
+          >
+            <Download className="w-4 h-4 text-blue-600" />
+            <span>Export CSV</span>
+          </a>
+        </div>
       </div>
 
       {notice && (

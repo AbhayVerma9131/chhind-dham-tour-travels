@@ -19,7 +19,8 @@ export const createBookingSchema = z
     customerPhone: z
       .string()
       .trim()
-      .regex(/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian mobile number"),
+      .transform((val) => val.replace(/[\s\-\+]/g, "").replace(/^(91|0)/, ""))
+      .pipe(z.string().regex(/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian mobile number")),
     customerEmail: z
       .string()
       .trim()
