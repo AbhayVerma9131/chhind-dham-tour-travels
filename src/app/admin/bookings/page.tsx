@@ -20,7 +20,7 @@ export default async function AdminBookingsPage() {
       orderBy: { createdAt: "desc" },
     });
 
-    formattedBookings = raw.map((b) => ({
+    formattedBookings = raw.map((b: any) => ({
       id: b.id,
       referenceNumber: b.referenceNumber,
       customerName: b.customerName,
