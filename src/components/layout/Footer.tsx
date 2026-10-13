@@ -12,17 +12,14 @@ export function Footer() {
           {/* Brand Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-amber-100 bg-white shadow-md shrink-0 flex items-center justify-center">
+              <div className="h-16 w-auto max-w-[200px] overflow-hidden shrink-0 flex items-center justify-center">
                 <img
                   src="/images/logo.png"
                   alt="छिंद धाम TOUR TRAVELS Logo"
-                  className="w-full h-full object-contain"
+                  className="h-full w-auto object-contain"
                 />
               </div>
               <div>
-                <span className="text-xl font-bold tracking-tight text-slate-900 block">
-                  <span className="text-blue-600">छिंद धाम</span> TOUR TRAVELS
-                </span>
                 <span className="text-xs text-slate-500">Bhanpur, Bhopal</span>
               </div>
             </div>

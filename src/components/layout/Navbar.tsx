@@ -34,26 +34,20 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo / Brand Name */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-14 h-14 rounded-2xl overflow-hidden bg-white shadow-md group-hover:scale-105 group-hover:shadow-lg transition-all shrink-0 flex items-center justify-center border-2 border-amber-100">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="h-14 w-auto max-w-[180px] sm:max-w-[210px] overflow-hidden group-hover:scale-105 transition-all shrink-0 flex items-center justify-center">
                 <img
                   src="/images/logo.png"
                   alt="छिंद धाम TOUR TRAVELS Logo"
-                  className="w-full h-full object-contain"
+                  className="h-full w-auto object-contain"
                 />
               </div>
-              <div className="flex flex-col gap-0.5">
-                <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 flex items-center gap-2">
-                  <span className="text-blue-700">छिंद धाम</span>
-                  <span className="tracking-wide text-xs sm:text-sm font-semibold text-slate-600">TOUR TRAVELS</span>
+              <div className="hidden sm:flex flex-col gap-0.5">
+                <span className="text-[10px] tracking-wider uppercase text-slate-400 font-medium">Bhanpur, Bhopal</span>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-[9px] font-extrabold text-amber-900 shadow-sm">
+                  <Star className="w-2 h-2 fill-amber-900 text-amber-900" />
+                  11 YEARS
                 </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] tracking-wider uppercase text-slate-400 font-medium">Bhanpur, Bhopal</span>
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-[9px] font-extrabold text-amber-900 shadow-sm">
-                    <Star className="w-2 h-2 fill-amber-900 text-amber-900" />
-                    11 YEARS
-                  </span>
-                </div>
               </div>
             </Link>
 
