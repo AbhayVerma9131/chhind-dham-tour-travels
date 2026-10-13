@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 import { getCurrentAdminSession } from "@/lib/auth";
-import { getAllVehicles } from "@/server/services/vehicle.service";
-import { Car, Users, Settings2, Fuel, ShieldCheck } from "lucide-react";
+import { getAllVehiclesForAdmin } from "@/server/services/vehicle.service";
+import { VehicleManagerClient, VehicleRecord } from "./VehicleManagerClient";
+import { ShieldCheck, Car } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminVehiclesPage() {
   const session = await getCurrentAdminSession();
@@ -9,75 +12,55 @@ export default async function AdminVehiclesPage() {
     redirect("/admin/login");
   }
 
-  const vehicles = await getAllVehicles();
+  const rawVehicles = await getAllVehiclesForAdmin();
+
+  // Map to client-safe VehicleRecord structure
+  const formattedVehicles: VehicleRecord[] = rawVehicles.map((v) => ({
+    id: v.id,
+    slug: v.slug,
+    name: v.name,
+    brand: v.brand,
+    model: v.model ?? null,
+    category: v.category ?? null,
+    seatingCapacity: v.seatingCapacity ?? null,
+    transmission: v.transmission ?? null,
+    fuelType: v.fuelType ?? null,
+    description: v.description ?? null,
+    isActive: v.isActive,
+    isFeatured: v.isFeatured,
+    supportedModes: v.supportedModes,
+    images: (v.images || []).map((img) => ({
+      id: img.id,
+      imageUrl: img.imageUrl,
+      isPrimary: img.isPrimary,
+    })),
+    rates: (v.rates || []).map((r) => ({
+      id: r.id,
+      rentalType: r.rentalType,
+      durationHours: r.durationHours ?? null,
+      seatCategory: r.seatCategory ?? null,
+      basePrice: r.basePrice ? Number(r.basePrice) : null,
+      ratePerKm: r.ratePerKm ? Number(r.ratePerKm) : null,
+      isActive: r.isActive,
+    })),
+  }));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       <div>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-200 bg-blue-50 text-xs font-semibold text-blue-700 mb-2">
+          <Car className="w-4 h-4 text-blue-600" />
+          <span>Fleet &amp; Inventory Operations</span>
+        </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
           Vehicle Catalogue Management
         </h1>
-        <p className="text-xs text-slate-600 mt-1">
-          Review fleet inventory, seating capacities, and supported rental models.
+        <p className="text-xs text-slate-600 mt-1 max-w-2xl">
+          Add new cars, remove vehicles, set duration and per-km pricing slabs, and toggle live availability across the छिंद धाम TOUR TRAVELS website.
         </p>
       </div>
 
-      <div className="rounded-2xl border border-slate-200/90 bg-white overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider font-semibold">
-              <tr>
-                <th className="py-3 px-4">Vehicle</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Seating</th>
-                <th className="py-3 px-4">Transmission</th>
-                <th className="py-3 px-4">Fuel</th>
-                <th className="py-3 px-4">Rental Modes</th>
-                <th className="py-3 px-4">Featured</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {vehicles.map((v) => (
-                <tr key={v.slug} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-4 px-4 font-bold text-slate-900">
-                    {v.name}
-                    <span className="block text-[10px] text-slate-500 font-normal">
-                      Brand: {v.brand}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-slate-700">{v.category || "Standard"}</td>
-                  <td className="py-4 px-4 text-slate-700">
-                    {v.seatingCapacity ? `${v.seatingCapacity} Seater` : "On Call"}
-                  </td>
-                  <td className="py-4 px-4 text-slate-700">{v.transmission || "Manual"}</td>
-                  <td className="py-4 px-4 text-slate-700">{v.fuelType || "Petrol/Diesel"}</td>
-                  <td className="py-4 px-4 text-slate-700">
-                    <div className="flex gap-1 flex-wrap">
-                      {v.supportedModes.map((m) => (
-                        <span
-                          key={m}
-                          className="px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 border border-slate-200 font-medium"
-                        >
-                          {m}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    {v.isFeatured ? (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
-                        Featured
-                      </span>
-                    ) : (
-                      <span className="text-slate-400 text-[11px]">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <VehicleManagerClient initialVehicles={formattedVehicles} />
     </div>
   );
 }

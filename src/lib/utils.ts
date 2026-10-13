@@ -31,8 +31,36 @@ export function sanitizePhone(phone: string): string {
  */
 export function buildWhatsAppLink(phone: string, message?: string): string {
   const cleanNumber = sanitizePhone(phone).replace(/^\+/, "");
-  // If no country code, prefix 91 for India
   const fullNumber = cleanNumber.length === 10 ? `91${cleanNumber}` : cleanNumber;
   const encodedMsg = message ? encodeURIComponent(message) : "";
   return `https://wa.me/${fullNumber}${encodedMsg ? `?text=${encodedMsg}` : ""}`;
 }
+
+/**
+ * Returns the photo image URL for a vehicle model
+ */
+export function getCarImageUrl(slug?: string, customImage?: string): string {
+  if (customImage && customImage.trim()) {
+    return customImage;
+  }
+  if (!slug) return "/images/cars/ertiga.png";
+  
+  const knownSlugs = [
+    "mahindra-thar",
+    "xuv-700",
+    "scorpio-n",
+    "scorpio",
+    "verna",
+    "ertiga",
+    "dzire",
+    "aura",
+    "victoris",
+  ];
+  
+  if (knownSlugs.includes(slug.toLowerCase())) {
+    return `/images/cars/${slug.toLowerCase()}.png`;
+  }
+  
+  return "/images/cars/ertiga.png";
+}
+

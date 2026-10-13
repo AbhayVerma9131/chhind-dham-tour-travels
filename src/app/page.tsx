@@ -10,11 +10,13 @@ import {
   Sparkles,
   HelpCircle,
   MapPin,
+  Users,
+  Settings2,
 } from "lucide-react";
 import { QuickEnquiryForm } from "@/components/booking/QuickEnquiryForm";
 import { getAllVehicles } from "@/server/services/vehicle.service";
 import { getAllTourPackages } from "@/server/services/package.service";
-import { formatINR, buildWhatsAppLink } from "@/lib/utils";
+import { formatINR, buildWhatsAppLink, getCarImageUrl } from "@/lib/utils";
 
 export default async function HomePage() {
   const [vehicles, packages] = await Promise.all([
@@ -121,59 +123,86 @@ export default async function HomePage() {
             href="/cars"
             className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
           >
-            <span>View All 9 Vehicles</span>
+            <span>View All Vehicles</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredVehicles.map((car) => (
-            <div
-              key={car.slug}
-              className="rounded-2xl border border-slate-200 bg-white p-5 flex flex-col justify-between hover:border-slate-300 hover:shadow-lg shadow-sm transition-all"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-500 font-medium">{car.brand}</span>
-                  <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-semibold">
-                    {car.category || "Vehicle"}
-                  </span>
+          {featuredVehicles.map((car) => {
+            const photoUrl = getCarImageUrl(car.slug, car.images?.[0]?.imageUrl);
+
+            return (
+              <div
+                key={car.slug}
+                className="rounded-3xl border border-slate-200 bg-white overflow-hidden flex flex-col justify-between hover:border-blue-300 hover:shadow-xl shadow-sm transition-all group"
+              >
+                {/* Car Photo Banner */}
+                <div className="relative h-44 w-full bg-slate-100 overflow-hidden">
+                  <img
+                    src={photoUrl}
+                    alt={`${car.name} - छिंद धाम TOUR TRAVELS Bhopal`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
+
+                  <div className="absolute top-2.5 left-2.5">
+                    <span className="px-2 py-0.5 rounded-full bg-blue-600/90 backdrop-blur-xs text-white text-[10px] font-bold shadow-xs">
+                      {car.category || "Vehicle"}
+                    </span>
+                  </div>
+
+                  <div className="absolute bottom-2 left-3 text-white z-10">
+                    <span className="text-[10px] uppercase font-bold text-blue-200 block">
+                      {car.brand}
+                    </span>
+                    <h3 className="text-sm font-bold text-white drop-shadow">
+                      {car.name}
+                    </h3>
+                  </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900">{car.name}</h3>
+                <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
+                  <div className="space-y-2.5">
+                    <div className="grid grid-cols-2 gap-2 text-xs text-slate-700 pt-1">
+                      <div className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-center">
+                        <span className="text-[9px] text-slate-500 block">Seats</span>
+                        <span className="font-semibold text-slate-800 text-xs">
+                          {car.seatingCapacity ? `${car.seatingCapacity} Seater` : "On Request"}
+                        </span>
+                      </div>
+                      <div className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-center">
+                        <span className="text-[9px] text-slate-500 block">Gearbox</span>
+                        <span className="font-semibold text-slate-800 text-xs truncate block">
+                          {car.transmission || "Manual"}
+                        </span>
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs text-slate-700 pt-1">
-                  <div className="p-2 rounded-lg bg-slate-50 border border-slate-200">
-                    <span className="text-[10px] text-slate-500 block">Seats</span>
-                    <span className="font-semibold text-slate-800">{car.seatingCapacity ? `${car.seatingCapacity} Seater` : "On Request"}</span>
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                      {car.description}
+                    </p>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-50 border border-slate-200">
-                    <span className="text-[10px] text-slate-500 block">Gearbox</span>
-                    <span className="font-semibold text-slate-800">{car.transmission || "Manual"}</span>
+
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <Link
+                      href={`/cars/${car.slug}`}
+                      className="text-xs font-semibold text-slate-700 hover:text-blue-600 transition-colors"
+                    >
+                      View Details &rarr;
+                    </Link>
+                    <Link
+                      href={`/booking?vehicle=${car.slug}`}
+                      className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-colors"
+                    >
+                      Enquire
+                    </Link>
                   </div>
                 </div>
-
-                <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                  {car.description}
-                </p>
               </div>
-
-              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
-                <Link
-                  href={`/cars/${car.slug}`}
-                  className="text-xs font-semibold text-slate-700 hover:text-blue-600 transition-colors"
-                >
-                  View Details &rarr;
-                </Link>
-                <Link
-                  href={`/booking?vehicle=${car.slug}`}
-                  className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-colors"
-                >
-                  Enquire
-                </Link>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

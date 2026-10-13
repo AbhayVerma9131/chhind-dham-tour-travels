@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ShieldCheck, ArrowRight, Phone, MessageSquare, AlertCircle } from "lucide-react";
-import { formatINR, buildWhatsAppLink } from "@/lib/utils";
+import { formatINR, buildWhatsAppLink, getCarImageUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -34,7 +34,7 @@ export default function SelfDrivePage() {
         </p>
       </div>
 
-      {/* Pricing Table */}
+      {/* Pricing Table with Travel Vehicle Photos */}
       <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
@@ -49,13 +49,22 @@ export default function SelfDrivePage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {SELF_DRIVE_TABLE.map((row) => (
-                <tr key={row.slug} className="hover:bg-slate-50/80 transition-colors">
+                <tr key={row.slug} className="hover:bg-slate-50/80 transition-colors group">
                   <td className="px-6 py-4">
                     <Link
                       href={`/cars/${row.slug}`}
-                      className="font-bold text-slate-900 hover:text-blue-600 transition-colors"
+                      className="flex items-center gap-3.5 group-hover:text-blue-600 transition-colors"
                     >
-                      {row.vehicle}
+                      <div className="w-14 h-10 rounded-xl overflow-hidden border border-slate-200 shrink-0 bg-slate-100 shadow-xs">
+                        <img
+                          src={getCarImageUrl(row.slug)}
+                          alt={row.vehicle}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      </div>
+                      <span className="font-bold text-slate-900 group-hover:text-blue-600">
+                        {row.vehicle}
+                      </span>
                     </Link>
                   </td>
                   <td className="px-6 py-4 text-center">

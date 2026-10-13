@@ -14,8 +14,10 @@ import {
   ArrowRight,
   MessageSquare,
   CheckCircle,
+  MapPin,
+  Sparkles,
 } from "lucide-react";
-import { formatINR, buildWhatsAppLink } from "@/lib/utils";
+import { formatINR, buildWhatsAppLink, getCarImageUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
 interface VehiclePageProps {
@@ -28,7 +30,7 @@ export async function generateMetadata({ params }: VehiclePageProps): Promise<Me
   const vehicle = await getVehicleBySlug(params.slug);
   if (!vehicle) return { title: "Vehicle Not Found" };
   return {
-    title: `${vehicle.name} Rental Bhopal`,
+    title: `${vehicle.name} Rental Bhopal | छिंद धाम TOUR TRAVELS`,
     description: `Rent ${vehicle.name} in Bhopal. Self-drive and chauffeur rentals by छिंद धाम TOUR TRAVELS.`,
   };
 }
@@ -47,9 +49,10 @@ export default async function VehicleDetailsPage({ params }: VehiclePageProps) {
 
   const hasSelfDrive = vehicle.supportedModes.includes("SELF_DRIVE");
   const hasChauffeur = vehicle.supportedModes.includes("CHAUFFEUR");
+  const photoUrl = getCarImageUrl(vehicle.slug, vehicle.images?.[0]?.imageUrl);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
       {/* Breadcrumb Navigation */}
       <nav className="text-xs text-slate-500 flex items-center gap-2">
         <Link href="/" className="hover:text-slate-900 transition-colors">
@@ -64,24 +67,63 @@ export default async function VehicleDetailsPage({ params }: VehiclePageProps) {
       </nav>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* Left Specification Column */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        {/* Left Column: Image Banner + Specs + Tour Features */}
         <div className="lg:col-span-7 space-y-8">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+          {/* Hero Tour Vehicle Image */}
+          <div className="relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-900 shadow-lg group">
+            <div className="h-72 sm:h-96 w-full overflow-hidden">
+              <img
+                src={photoUrl}
+                alt={`${vehicle.name} - छिंद धाम TOUR TRAVELS Bhopal`}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent pointer-events-none" />
+
+            {/* Badges on Hero Image */}
+            <div className="absolute top-4 left-4 flex gap-2 z-10">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-600/90 text-white backdrop-blur-md shadow">
                 {vehicle.brand}
               </span>
               {vehicle.category && (
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/90 text-slate-950 backdrop-blur-md shadow">
                   {vehicle.category}
                 </span>
               )}
             </div>
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900">
-              {vehicle.name}
-            </h1>
-            <p className="text-sm text-slate-600 leading-relaxed pt-2">
+
+            <div className="absolute bottom-5 left-5 right-5 text-white z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+              <div>
+                <span className="text-xs text-blue-200 uppercase tracking-widest font-semibold flex items-center gap-1.5 mb-1">
+                  <MapPin className="w-3.5 h-3.5" /> Bhopal, Madhya Pradesh Hub
+                </span>
+                <h1 className="text-2xl sm:text-4xl font-extrabold text-white drop-shadow-md">
+                  {vehicle.name}
+                </h1>
+              </div>
+              <div className="flex gap-2">
+                {hasSelfDrive && (
+                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/20 backdrop-blur-md text-white border border-white/30">
+                    Self-Drive
+                  </span>
+                )}
+                {hasChauffeur && (
+                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/20 backdrop-blur-md text-white border border-white/30">
+                    With Driver
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Description & Overview */}
+          <div className="space-y-3">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-blue-600" />
+              <span>Vehicle & Tour Overview</span>
+            </h2>
+            <p className="text-sm text-slate-600 leading-relaxed">
               {vehicle.description}
             </p>
           </div>
@@ -159,8 +201,13 @@ export default async function VehicleDetailsPage({ params }: VehiclePageProps) {
 
         {/* Right Tariff & Booking CTA Column */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 space-y-6 shadow-md">
-            <h3 className="text-lg font-bold text-slate-900">Rental Pricing Summary</h3>
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 space-y-6 shadow-md sticky top-28">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-900">Rental Tariff Summary</h3>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Available in Bhopal
+              </span>
+            </div>
 
             {hasSelfDrive && (
               <div className="space-y-3">
@@ -213,7 +260,7 @@ export default async function VehicleDetailsPage({ params }: VehiclePageProps) {
             </div>
 
             <p className="text-[11px] text-slate-500 text-center">
-              Booking requests are subject to admin availability verification.
+              Booking requests are handled promptly by our Bhopal operations desk.
             </p>
           </div>
         </div>

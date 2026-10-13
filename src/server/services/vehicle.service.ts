@@ -135,6 +135,9 @@ export const SEED_VEHICLES: ConfirmedVehicleSeed[] = [
   },
 ];
 
+/**
+ * Returns active vehicles for public catalogue
+ */
 export async function getAllVehicles() {
   try {
     const dbVehicles = await prisma.vehicle.findMany({
@@ -145,6 +148,35 @@ export async function getAllVehicles() {
     if (dbVehicles.length > 0) return dbVehicles;
   } catch (err) {
     // Fall back to seed data if database is initializing
+  }
+  return SEED_VEHICLES.map((v, i) => ({
+    id: `seed-${i}`,
+    ...v,
+    model: v.model ?? null,
+    seatingCapacity: v.seatingCapacity ?? null,
+    transmission: v.transmission ?? null,
+    fuelType: v.fuelType ?? null,
+    luggageCapacity: v.luggageCapacity ?? null,
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    images: [],
+    rates: [],
+  }));
+}
+
+/**
+ * Returns all vehicles including inactive for Admin portal management
+ */
+export async function getAllVehiclesForAdmin() {
+  try {
+    const dbVehicles = await prisma.vehicle.findMany({
+      include: { images: { orderBy: { displayOrder: "asc" } }, rates: true },
+      orderBy: [{ isFeatured: "desc" }, { name: "asc" }],
+    });
+    if (dbVehicles.length > 0) return dbVehicles;
+  } catch (err) {
+    // Fall back to seed data
   }
   return SEED_VEHICLES.map((v, i) => ({
     id: `seed-${i}`,

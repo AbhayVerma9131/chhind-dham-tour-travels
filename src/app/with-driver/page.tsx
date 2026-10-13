@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ShieldCheck, ArrowRight, Phone, MessageSquare, AlertCircle, CheckCircle } from "lucide-react";
-import { buildWhatsAppLink } from "@/lib/utils";
+import { buildWhatsAppLink, getCarImageUrl } from "@/lib/utils";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -45,22 +45,32 @@ export default function WithDriverPage() {
               Ideal for solo executives, couples, and small families traveling for business, airport transfers, or outstation visits.
             </p>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs text-slate-700">
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 text-xs text-slate-700">
               <div className="font-semibold text-slate-900">Applicable Vehicles:</div>
-              <ul className="space-y-1.5 text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Maruti Suzuki Dzire (Sedan)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Hyundai Aura (Compact Sedan)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Hyundai Verna (Executive Sedan)</span>
-                </li>
-              </ul>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { name: "Dzire", slug: "dzire" },
+                  { name: "Aura", slug: "aura" },
+                  { name: "Verna", slug: "verna" },
+                ].map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/cars/${c.slug}`}
+                    className="p-2 rounded-xl bg-white border border-slate-200 text-center hover:border-blue-300 hover:shadow-xs transition-all group"
+                  >
+                    <div className="h-12 w-full rounded-lg overflow-hidden mb-1.5 bg-slate-100">
+                      <img
+                        src={getCarImageUrl(c.slug)}
+                        alt={c.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-800 block truncate group-hover:text-blue-600">
+                      {c.name}
+                    </span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -90,22 +100,32 @@ export default function WithDriverPage() {
               Ample legroom and boot space for families, group pilgrimages, and extended luggage journeys.
             </p>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs text-slate-700">
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 text-xs text-slate-700">
               <div className="font-semibold text-slate-900">Applicable Vehicles:</div>
-              <ul className="space-y-1.5 text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-purple-600" />
-                  <span>Maruti Suzuki Ertiga (Comfort MUV)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-purple-600" />
-                  <span>Mahindra Scorpio &amp; Scorpio-N (SUV)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-purple-600" />
-                  <span>Mahindra XUV 700 (Premium SUV)</span>
-                </li>
-              </ul>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { name: "Ertiga", slug: "ertiga" },
+                  { name: "Scorpio", slug: "scorpio" },
+                  { name: "XUV 700", slug: "xuv-700" },
+                ].map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/cars/${c.slug}`}
+                    className="p-2 rounded-xl bg-white border border-slate-200 text-center hover:border-purple-300 hover:shadow-xs transition-all group"
+                  >
+                    <div className="h-12 w-full rounded-lg overflow-hidden mb-1.5 bg-slate-100">
+                      <img
+                        src={getCarImageUrl(c.slug)}
+                        alt={c.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-800 block truncate group-hover:text-purple-600">
+                      {c.name}
+                    </span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 
