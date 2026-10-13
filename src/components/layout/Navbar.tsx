@@ -27,8 +27,12 @@ export function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Logo / Brand Name */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-600/20 group-hover:scale-105 transition-transform">
-              <ShieldCheck className="w-6 h-6 text-white" />
+            <div className="w-11 h-11 rounded-xl overflow-hidden border border-slate-200/80 bg-white p-0.5 shadow-sm group-hover:scale-105 group-hover:shadow-md transition-all shrink-0 flex items-center justify-center">
+              <img
+                src="/images/logo.png"
+                alt="छिंद धाम TOUR TRAVELS Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 flex items-center gap-1">

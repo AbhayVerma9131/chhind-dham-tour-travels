@@ -11,7 +11,14 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-200">
           {/* Brand Column */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 bg-white p-0.5 shadow-xs shrink-0 flex items-center justify-center">
+                <img
+                  src="/images/logo.png"
+                  alt="छिंद धाम TOUR TRAVELS Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <span className="text-xl font-bold tracking-tight text-slate-900">
                 <span className="text-blue-600">छिंद धाम</span> TOUR TRAVELS
               </span>
